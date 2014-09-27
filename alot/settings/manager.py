@@ -11,6 +11,7 @@ from configobj import ConfigObj, Section
 from alot.account import SendmailAccount
 from alot.addressbooks import MatchSdtoutAddressbook, AbookAddressBook
 from alot.helper import pretty_datetime, string_decode
+from alot.savedsearch import SavedSearch
 
 from errors import ConfigError
 from utils import read_config
@@ -42,6 +43,7 @@ class SettingsManager(object):
         self._theme = None
         self._accounts = None
         self._accountmap = None
+        self._saved_searches = None
         bindings_path = os.path.join(DEFAULTSPATH, 'default.bindings')
         self._bindings = ConfigObj(bindings_path)
         if alot_rc is not None:
@@ -106,6 +108,8 @@ class SettingsManager(object):
         self._accounts = self._parse_accounts(self._config)
         self._accountmap = self._account_table(self._accounts)
 
+        self._saved_searches = self._parse_saved_searches(self._config)
+
     def _parse_accounts(self, config):
         """
         read accounts information from config
@@ -162,6 +166,16 @@ class SettingsManager(object):
             for alias in acc.aliases:
                 accountmap[alias] = acc
         return accountmap
+
+    def _parse_saved_searches(self, config):
+        saved_searches = []
+
+        if 'saved_searches' in config:
+            for ss in config['saved_searches'].sections:
+                args = dict(config['saved_searches'][ss])
+                saved_searches.append(SavedSearch(ss, **args))
+
+        return saved_searches
 
     def get(self, key, fallback=None):
         """
@@ -425,6 +439,12 @@ class SettingsManager(object):
                 if a.abook and a.abook not in abooks:
                     abooks.append(a.abook)
         return abooks
+
+    def get_saved_searches(self):
+        """
+        return the list of all defined saved searches
+        """
+        return self._saved_searches
 
     def mailcap_find_match(self, *args, **kwargs):
         """

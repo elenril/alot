@@ -16,6 +16,7 @@ from alot.widgets.globals import TagWidget
 from alot.widgets.globals import HeadersList
 from alot.widgets.globals import AttachmentWidget
 from alot.widgets.bufferlist import BufferlineWidget
+from alot.widgets.savedsearches import SavedSearchWidget
 from alot.widgets.search import ThreadlineWidget
 from alot.widgets.thread import ThreadTree
 from alot.foreign.urwidtrees import ArrowTree, TreeBox, NestedTree
@@ -200,6 +201,69 @@ class EnvelopeBuffer(Buffer):
         """toggles visibility of all envelope headers"""
         self.all_headers = not self.all_headers
         self.rebuild()
+
+
+class SavedSearchesBuffer(Buffer):
+    """
+    a buffer holding saved searches
+    (i.e. a list of named queries)
+    """
+
+    modename = 'savedsearches'
+
+    def __init__(self, ui, saved_searches):
+        """
+        :param ui: main UI
+        :type ui: :class:`~alot.ui.UI`
+        :param saved_searches: a list of saved searches to display
+        :type saved_searches: :class:`~alot.savedsearches.SavedSearch`
+        """
+        self.ui = ui
+        self.isinitialized = False
+        self.saved_searches = saved_searches
+        self.rebuild()
+        Buffer.__init__(self, ui, self.body)
+
+    def get_info(self):
+        """
+        for the status bar
+        """
+        info = {}
+
+        info['folders_count'] = len(self.saved_searches)
+
+        return info
+
+    def rebuild(self):
+        logging.debug("Rebuild saved searches.")
+
+        ss = []
+        for item in self.saved_searches:
+            ss.append(SavedSearchWidget(self.ui.dbman, item))
+        self.listbox = urwid.ListBox(urwid.SimpleListWalker(ss))
+        self.body = self.listbox
+
+    def focus_first(self):
+        self.body.set_focus(0)
+
+    def focus_last(self):
+        self.body.set_focus(len(self.saved_searches) - 1)
+
+    def refresh(self):
+        """refresh buffer with updated information"""
+        #self.body.refresh()
+        pass
+
+    def get_focused(self):
+        try:
+            return self.body.get_focus()[1]
+        except AttributeError:
+            return None
+
+    def get_current_ss(self):
+        focused = self.get_focused()
+        if focused is not None:
+            return self.saved_searches[focused]
 
 
 class SearchBuffer(Buffer):

@@ -30,6 +30,10 @@ q = exit
     x = close
     enter = open
 
+[savedsearches]
+    enter = open
+    ' ' = open_unread
+
 [search]
     enter = select
     a = toggletags inbox

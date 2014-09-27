@@ -17,7 +17,9 @@
     line_focus = attrtriple
     line_even = attrtriple
     line_odd = attrtriple
-
+[savedsearches]
+    normal = attrtriple
+    focus = attrtriple
 [taglist]
     line_focus = attrtriple
     line_even = attrtriple

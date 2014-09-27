@@ -37,6 +37,7 @@ COMMANDS = {
     'search': {},
     'envelope': {},
     'bufferlist': {},
+    'savedsearches': {},
     'taglist': {},
     'thread': {},
     'global': {},

@@ -484,6 +484,23 @@ class OpenBufferlistCommand(Command):
             ui.buffer_open(bl)
 
 
+@registerCommand(MODE, 'savedsearches')
+class OpenSavedSearchesCommand(Command):
+    _saved_searches = None
+
+    def __init__(self, **kwargs):
+        Command.__init__(self, **kwargs)
+        self._saved_searches = settings.get_saved_searches()
+
+    def apply(self, ui):
+        s_buffers = ui.get_buffers_of_type(buffers.SavedSearchesBuffer)
+        if s_buffers:
+            ui.buffer_focus(s_buffers[0])
+        else:
+            buffer = buffers.SavedSearchesBuffer(ui, self._saved_searches)
+            ui.buffer_open(buffer)
+
+
 @registerCommand(MODE, 'taglist', arguments=[
     (['--tags'], {'nargs': '+', 'help': 'tags to display'}),
 ])
