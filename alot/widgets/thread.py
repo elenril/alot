@@ -54,9 +54,13 @@ class MessageSummaryWidget(urwid.WidgetWrap):
         urwid.WidgetWrap.__init__(self, line)
 
     def __str__(self):
+        try:
+            subject = self.message.get_headers_string(['subject']).strip().split(':', 1)[1]
+        except:
+            subject = ''
         author, address = self.message.get_author()
         date = self.message.get_datestring()
-        rep = author if author != '' else address
+        rep = '%s: %s' % (author if author != '' else address, subject if subject else '')
         if date is not None:
             rep += " (%s)" % date
         return rep
